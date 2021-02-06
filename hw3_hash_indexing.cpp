@@ -16,16 +16,47 @@ class Hash
 
     list<int> *table;
 
-  public:
-    Hash(int V);
-    void insertItem(int x);
+    public:
+        Hash(int V);
+        // void insertItem(int x);
 
-    int hashFunction(int x)
-    {
-        return (x % CONTAINER);
-    }
+        int hashFunction(int x)
+        {
+            return (x % CONTAINER);
+        }
 
-    void displayHash();
+        void insertItem(int key)
+        {
+        int index = hashFunction(key);
+        table[index].push_back(key);
+        }
+
+        void displayHash()
+        {
+            ofstream inputFile;
+            inputFile.open("EmployeeIndex.txt");
+            for (int i = 0; i < CONTAINER; i++)
+            {
+                cout << i;
+                inputFile << i;
+                for (auto x : table[i])
+                {
+                    cout << " --> " << x;
+                    inputFile << " --> " << x;
+                    string c = to_string(x);
+                    for (int i = 0; i < umap[c].size(); i++)
+                    {
+                        cout << " ";
+                        cout << umap[c][i];
+                        inputFile << " " << umap[c][i];
+                    }
+                }
+                inputFile << "\n";
+
+                cout << endl;
+            }
+            inputFile.close();
+        }
 };
 
 Hash::Hash(int b)
@@ -34,38 +65,6 @@ Hash::Hash(int b)
     table = new list<int>[CONTAINER];
 }
 
-void Hash::insertItem(int key)
-{
-    int index = hashFunction(key);
-    table[index].push_back(key);
-}
-
-void Hash::displayHash()
-{
-    ofstream inputFile;
-    inputFile.open("EmployeeIndex.txt");
-    for (int i = 0; i < CONTAINER; i++)
-    {
-        cout << i;
-        inputFile << i;
-        for (auto x : table[i])
-        {
-            cout << " --> " << x;
-            inputFile << " --> " << x;
-            string c = to_string(x);
-            for (int i = 0; i < umap[c].size(); i++)
-            {
-                cout << " ";
-                cout << umap[c][i];
-                inputFile << " " << umap[c][i];
-            }
-        }
-        inputFile << "\n";
-
-        cout << endl;
-    }
-    inputFile.close();
-}
 
 void retrieveRecord(string c)
 {
