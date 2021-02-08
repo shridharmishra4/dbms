@@ -1,14 +1,14 @@
-#include <iostream>
+#include <string>
+#include <ostream>
 #include <list>
 #include <fstream>
 #include <map>
+#include <unordered_map>
 #include <vector>
 #include <sstream>
-#include <string>
-#include <ostream>
-#include <unordered_map>
+#include <iostream>
 using namespace std;
-unordered_map<string, vector<string> > umap;
+unordered_map<string, vector<string> > IndexMap;
 
 class Hash
 {
@@ -30,7 +30,7 @@ class Hash
         table[index].push_back(key);
         }
 
-        void displayHash()
+        void writetoFile()
         {
             ofstream inputFile;
             inputFile.open("EmployeeIndex.txt");
@@ -43,11 +43,11 @@ class Hash
                     cout << " --> " << x;
                     inputFile << " --> " << x;
                     string c = to_string(x);
-                    for (int i = 0; i < umap[c].size(); i++)
+                    for (int i = 0; i < IndexMap[c].size(); i++)
                     {
                         cout << " ";
-                        cout << umap[c][i];
-                        inputFile << " " << umap[c][i];
+                        cout << IndexMap[c][i];
+                        inputFile << " " << IndexMap[c][i];
                     }
                 }
                 inputFile << "\n";
@@ -67,9 +67,9 @@ Hash::Hash(int b)
 
 void retrieveRecord(string c)
 {
-    for (int i = 0; i < umap[c].size(); i++)
+    for (int i = 0; i < IndexMap[c].size(); i++)
     {
-        cout << umap[c][i] << " ";
+        cout << IndexMap[c][i] << " ";
     }
     cout << "\n";
 }
@@ -78,7 +78,7 @@ void CreateIndex()
 {
     std::ifstream data("Employee.csv");
     std::string line;
-    std::vector<std::vector<std::string> > ParseCSV;
+    std::vector<std::vector<std::string> > parseCSV;
     unordered_map<string, vector<std::string> >::iterator itr;
     int count = 0;
     while (std::getline(data, line))
@@ -91,23 +91,23 @@ void CreateIndex()
             row_parse.push_back(cell);
         }
         count++;
-        ParseCSV.push_back(row_parse);
+        parseCSV.push_back(row_parse);
     }
-    Hash h(count / 2);
-    for (auto row : ParseCSV)
+    Hash half(count / 2);
+    for (auto row : parseCSV)
     {
         string id;
         for (auto col : row)
         {
             id = col;
-            umap[id] = row;
+            IndexMap[id] = row;
             int i = stoi(id);
-            h.insertItem(i);
+            half.insertItem(i);
             break;
         }
     }
 
-    h.displayHash();
+    half.writetoFile();
 }
 
 int main()
@@ -116,7 +116,7 @@ int main()
 
     while (true)
     {
-        string c;
+        string inputStr;
         int flag = 0;
         cout << "Enter command l:fetch record, c:create index , e:exit"
              << "\n";
@@ -133,9 +133,10 @@ int main()
         case 'L':
             cout << "Enter employee ID"
                  << "\n";
-            cin >> c;
-            retrieveRecord(c);
+            cin >> inputStr;
+            retrieveRecord(inputStr);
             break;
+        case 'E':
         case 'e':
             flag = 1;
             break;
