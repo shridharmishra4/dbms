@@ -12,17 +12,16 @@ unordered_map<string, vector<string> > umap;
 
 class Hash
 {
-    int CONTAINER;
+    int Container;
 
     list<int> *table;
 
     public:
         Hash(int V);
-        // void insertItem(int x);
 
         int hashFunction(int x)
         {
-            return (x % CONTAINER);
+            return (x % Container);
         }
 
         void insertItem(int key)
@@ -35,7 +34,7 @@ class Hash
         {
             ofstream inputFile;
             inputFile.open("EmployeeIndex.txt");
-            for (int i = 0; i < CONTAINER; i++)
+            for (int i = 0; i < Container; i++)
             {
                 cout << i;
                 inputFile << i;
@@ -61,8 +60,8 @@ class Hash
 
 Hash::Hash(int b)
 {
-    this->CONTAINER = b;
-    table = new list<int>[CONTAINER];
+    this->Container = b;
+    table = new list<int>[Container];
 }
 
 
@@ -77,7 +76,7 @@ void retrieveRecord(string c)
 
 void CreateIndex()
 {
-    std::ifstream data("input.csv");
+    std::ifstream data("Employee.csv");
     std::string line;
     std::vector<std::vector<std::string> > ParseCSV;
     unordered_map<string, vector<std::string> >::iterator itr;
