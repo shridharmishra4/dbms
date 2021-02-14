@@ -76,7 +76,7 @@ void retrieveRecord(string c)
 
 void CreateIndex()
 {
-    std::ifstream data("Employee.csv");
+    std::ifstream data("Employees.csv");
     std::string line;
     std::vector<std::vector<std::string> > parseCSV;
     unordered_map<string, vector<std::string> >::iterator itr;
