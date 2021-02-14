@@ -1,3 +1,15 @@
+// Assignment 3: CS540 DBMS: B+ tree with linear indexing
+// Date: 13/02/2021
+
+// Authors:
+// Shridhar Mishra( mishrash@oreognstate.edu, mishrash)
+// Irene Tematelewo(temateli@oregonstate.edu, temateli)
+
+// Usage:  g++ main.cpp -std=c++0x
+// ./a.out
+// Index first
+// Lookup
+
 #include <string>
 #include <cstring>
 #include <vector>
