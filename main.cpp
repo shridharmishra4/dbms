@@ -91,18 +91,21 @@ int hashingFunction(int id, int i) {
         cout<<"inside nasty loop i= "<<i<<"\n";
         div = pow(2, i);
     }
-    cout<<"Id  and divider key = "<<id <<" " <<div <<" "<<id % (int)div<<"\n";
     int hash = id % (int)div;
 
     if (hash < HashMap.size())
         {
         return hash;
+        // cout<<"Id  and divider key = "<<id <<" " <<div <<" "<<hash<<"\n";
         }
     else
         {
-            return ((int)hash ^ (1<<globalIndex-1));
+            hash = (int)hash ^ (1<<globalIndex-1);
+            cout<<"Id  and divider key = "<<id <<" " <<div <<" "<<hash<<"\n";
+            return (hash);
 
     };
+
 
     // return id % (int)div;
 }
@@ -327,16 +330,18 @@ int foundLookupResult;
 int findattempt;
 
 bool lookupData(int index) {
-    findattempt = findattempt+1;
-    int hash = hashingFunction(getid, index);
-    if(HashMap.size() <= hash ) {
-        hash = hashingFunction(getid, 0);
-    }
+    // findattempt = findattempt+1;
+    // int hash = hashingFunction(getid, index);
+    // if(HashMap.size() <= hash ) {
+
+        int hash = hashingFunction(index, 0);
+        cout<<"---------------hash from llokup-------"<<index<<endl;
+    
     
     if(HashMap[hash]){
         vector<Employee> empList = HashMap[hash]->employeeBlock;
         for(int i = 0; i< empList.size(); i++) {
-            if(empList[i].id == getid) {
+            if(empList[i].id == index) {
                 foundLookupResult = 1;
                 cout << "Lookup result: "<< empList[i].id << ", " << empList[i].name << '\n';
                 return true;
@@ -370,7 +375,7 @@ int main(int argc, char* argv[]) {
             cout << "Lookup!!\n";
             getid = stoi(argv[2]);
 
-            attemptLookup();
+            lookupData(getid);
         }
 
         if(strcmp(argv[1], "C") == 0) {
