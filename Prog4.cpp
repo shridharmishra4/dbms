@@ -9,9 +9,6 @@
 using namespace std;
 #define CHUNK_SIZE 22
 long long FILE_SIZE; 
-// #include "helper.h"
-
-
 
 
 bool EmpSortFunction(const vector<string>& p1, const vector<string>& p2)
@@ -56,7 +53,6 @@ void SavePartition(const char*  temp_filename,vector<vector<string> > print_str)
 
 }
 
-
 int sortPartition(const char* filename)
 {
     vector<vector<string> > Records;
@@ -69,7 +65,7 @@ int sortPartition(const char* filename)
     int NO_OF_CHUNKS = FILE_SIZE/CHUNK_SIZE;
     if(FILE_SIZE % CHUNK_SIZE != 0) NO_OF_CHUNKS += 1;
     int count = 0;
-    int fnptr = 1;
+    int filepointer = 1;
 
 
     ifstream csv(filename);
@@ -84,33 +80,31 @@ int sortPartition(const char* filename)
         Tuple.clear();
         // cout<<count<<endl;
         if(count == CHUNK_SIZE){
-            string chunkFile = "temp_emp_" + to_string(fnptr) +".csv";
+            string chunkFile = "temp_emp_" + to_string(filepointer) +".csv";
             sort(Records.begin(), Records.end(), EmpSortFunction);
             SavePartition(chunkFile.c_str(),Records);
             Records.clear();
-            fnptr++;
+            filepointer++;
             count = 0;
         }
     }
 
     if(Records.size()>0){
 
-        string chunkFile = "temp_emp_" + to_string(fnptr) +".csv";
+        string chunkFile = "temp_emp_" + to_string(filepointer) +".csv";
         sort(Records.begin(), Records.end(), EmpSortFunction);
         SavePartition(chunkFile.c_str(),Records);
         Records.clear();
-        fnptr++;
+        filepointer++;
         count = 0;
     }
     csv.close();
-    fnptr--;
-    //cout<<fnptr;
-    return fnptr;
+    filepointer--;
+    return filepointer;
 }
 
 class Record {
     //Emp (eid (integer), ename (string), age (integer), salary (double))
-
 
 	public:
         int eid;
@@ -121,17 +115,6 @@ class Record {
         Record() = default;
 		void print() const;
         string Stringify() const;
-
-
-
-		class eid_sort {
-			public:
-				bool operator() ( Record const &,
-			             	Record const & );
-		};
-
-
-	friend class eid_sort;
 };
 
 Record::Record(  int a, string b,  int c,  int d ):
@@ -155,78 +138,24 @@ string Record::Stringify() const {
 
 }
 
-
-
-bool Record::eid_sort::operator() ( Record const &a, Record const &b ) {
-	return a.eid > b.eid;
-}
-
-vector<Record> LoadCsv() {
-    ifstream fin;
-    fin.open("Emp.csv", ios::in);
-
-    vector<Record> Rows;
-    string line, word, temp;
-    
-
-    while (getline(fin, line)) {
-        // getline(fin, line);
-
-        stringstream s(line);
-
-        int count = 0;
-        int eid,age,salary;
-        string ename;
-        while (getline(s, word, ',')) {
-
-            if(count == 0) {
-                eid = stoi(word);
-                count++;
-            } else if(count == 1) {
-                ename = word;
-                count++;
-            } else if(count == 2) {
-                age = stoi(word);
-                count++;
-            } else if(count == 3) {
-                salary = stoi(word);
-                count++;
-            }             
-
-        }
-        // cout << eid << ", " << ename << "," << age <<  "," << salary << ","<< endl;
-        Rows.push_back(Record(eid,ename,age,salary));
-        
-    }
-    fin.close();
-    return Rows;
-}
-
-
-
 struct MinHeapNode
 {
-    // The tuple to be stored
-    Record tuple;
- 
-    // array index from which the element is taken
-    int i;
+    Record tuple;// The tuple to be stored
+    int i;    // array index from which the element is taken
 };
 
 struct comp
 {
-    bool operator()(const MinHeapNode &lhs, const MinHeapNode &rhs) const {
-        return lhs.tuple.eid > rhs.tuple.eid;
+    bool operator()(const MinHeapNode &l, const MinHeapNode &r) const {
+        return l.tuple.eid > r.tuple.eid;
     }
 };
 
-void read_first_lines(int k){
+void MergePartitions(int k){
 
-    // int k=4;
     ifstream chunkFiles[k];
     ofstream csv("join.csv", ios_base::app | ios_base::out);
     MinHeapNode harr[k];
-    // priority_queue< Record, vector< Record >, Record::eid_sort > pq_number;
     priority_queue<MinHeapNode, vector<MinHeapNode>, comp> pq;
 
     for(int i=0; i<k; i++){
@@ -269,35 +198,27 @@ void read_first_lines(int k){
             pq.push(harr[i]);
         }
 
-
-
     }
 
  
-    // One by one, get the minimum element from the min-heap and replace
-    // it with the next element. Run till all filled input files reach EOF.
-    int ct = 1;
-    int fc = 1;
-    while(fc!=k)
+    int line_count = 1;
+    int filecounter = 1;
+    while(filecounter!=k)
     {
-        // Get the minimum element and store it in the output file
+        // Get the minimum element and save it.
         MinHeapNode root = pq.top();
         pq.pop();
         root.tuple.print();
-        if(ct==FILE_SIZE)
+        if(line_count==FILE_SIZE)
             csv << root.tuple.Stringify();
         else{
             csv << root.tuple.Stringify();
             }
-        ct++;
+        line_count++;
 
- 
-        // Find the next element that should replace the current root of the heap.
-        // The next element belongs to the same input file as the current
-        // minimum element.
+        //repeat until all files reach eof
         string iterator;
         string line, word, temp;
-        // getline(chunkFiles[root.i], line);
         if (!getline(chunkFiles[root.i], line).eof()){
             stringstream s(line);
 
@@ -326,10 +247,8 @@ void read_first_lines(int k){
             harr[root.i].i = root.i;
             pq.push(harr[root.i]);
         }
-        else fc += 1;
+        else filecounter += 1;
  
-        // Replace the root with the next element of the input file
-        // pq.push(root);
     }
     for (int i = 0; i < k; i++) {
         chunkFiles[i].close();
@@ -337,9 +256,8 @@ void read_first_lines(int k){
  
     csv.close();
  
-    cout<<"-----------------"<<ct<<endl;
-    // pq_number.top().print();
-    // pq_number.po
+    cout<<"-----------------"<<line_count<<endl;
+
 
 }
 
@@ -349,6 +267,6 @@ int main()
     FILE_SIZE = getFileSize("temp.csv");
     int no_of_partitions = 0;
     no_of_partitions = sortPartition("temp.csv");
-    read_first_lines(no_of_partitions);
+    MergePartitions(no_of_partitions);
 
 }
